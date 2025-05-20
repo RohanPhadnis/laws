@@ -7,6 +7,7 @@ use std::sync::Arc;
 use serde_json::{Map, Value};
 use tokio::io::AsyncReadExt;
 use tokio::sync::RwLock;
+use crate::errors::DbError;
 
 const NULL_VAL: serde_json::Value = serde_json::Value::Null;
 
@@ -33,13 +34,13 @@ impl Table {
         }
     }
 
-    async fn create_document(&self, info: serde_json::Value) -> Result<(), crate::errors::DbError> {
+    async fn create_document(&self, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
         if let Err(e) = crate::validation::check_string_fields_exist(&info, &[self.primary_key.as_str()]) {
             return Err(e);
         }
         let mut guard = self.data.write().await;
         guard.deref_mut().insert(info[&(self.primary_key)].as_str().unwrap().to_string(), info);
-        Ok(())
+        Ok(NULL_VAL)
     }
     async fn read_document(&self, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
         if let Err(e) = crate::validation::check_string_fields_exist(&info, &[self.primary_key.as_str()]) {
@@ -52,20 +53,29 @@ impl Table {
         }
 
     }
-    async fn update_document(&self, info: serde_json::Value) {todo!()}
-    async fn delete_document(&self, info: serde_json::Value) -> Result<(), crate::errors::DbError> {
+    async fn update_document(&self, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {todo!()}
+    async fn delete_document(&self, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
         if let Err(e) = crate::validation::check_string_fields_exist(&info, &[self.primary_key.as_str()]) {
             return Err(e);
         }
         let mut guard = self.data.write().await;
         guard.deref_mut().remove(&(self.primary_key));
-        Ok(())
+        Ok(NULL_VAL)
     }
 }
 
 pub struct Database {
     tables: Arc<tokio::sync::RwLock<HashMap<String, Table>>>,
     path: String,
+}
+
+impl Clone for Database{
+    fn clone(&self) -> Self {
+        Self {
+            tables: self.tables.clone(),
+            path: self.path.clone(),
+        }
+    }
 }
 
 impl Database {
@@ -141,27 +151,27 @@ impl Database {
         Self::load(path)
     }
 
-    pub async fn read_db(&self) -> serde_json::Value {
+    pub async fn read_db(&self) -> Result<serde_json::Value, crate::errors::DbError> {
         let guard = self.tables.read().await;
         let mut v = Vec::new();
         v.reserve(guard.keys().len());
         for key in guard.keys() {
             v.push(key);
         }
-        serde_json::json!({
+        Ok(serde_json::json!({
             "tables": v
-        })
+        }))
     }
 
 
-    pub async fn create_table(&self, info: serde_json::Value) -> Result<(), crate::errors::DbError> {
+    pub async fn create_table(&self, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
         if let Err(e) = crate::validation::check_string_fields_exist(&info, &["table_name", "primary_key"]) {
             return Err(e);
         }
         let table = Table::new(info["table_name"].as_str().unwrap().to_string(), info["primary_key"].as_str().unwrap().to_string());
         let mut guard = self.tables.write().await;
         guard.deref_mut().insert(info["table_name"].as_str().unwrap().to_string(), table);
-        Ok(())
+        Ok(NULL_VAL)
     }
 
     pub async fn read_table(&self, table_name: &String) -> Result<serde_json::Value, crate::errors::DbError> {
@@ -187,14 +197,14 @@ impl Database {
         }
     }
     pub async fn update_table() {todo!();}
-    pub async fn delete_table(&self, table_name: &String) ->  Result<(), crate::errors::DbError> {
+    pub async fn delete_table(&self, table_name: &String) ->  Result<serde_json::Value, crate::errors::DbError> {
         let mut guard = self.tables.write().await;
         guard.deref_mut().remove(table_name);
-        Ok(())
+        Ok(NULL_VAL)
     }
 
 
-    pub async fn create_document(&self, table_name: &String, info: serde_json::Value) -> Result<(), crate::errors::DbError> {
+    pub async fn create_document(&self, table_name: &String, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
         let guard = self.tables.read().await;
         match guard.deref().get(table_name) {
             None => {Err(crate::errors::DbError::TableNotFound(String::from("Table does not exist")))}
@@ -213,7 +223,7 @@ impl Database {
         }
     }
     pub async fn update_document(&self, table_name: &String, info: serde_json::Value) {todo!()}
-    pub async fn delete_document(&self, table_name: &String, info: serde_json::Value) -> Result<(), crate::errors::DbError> {
+    pub async fn delete_document(&self, table_name: &String, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
         let guard = self.tables.read().await;
         match guard.deref().get(table_name) {
             None => {Err(crate::errors::DbError::TableNotFound(String::from("Table does not exist")))}
