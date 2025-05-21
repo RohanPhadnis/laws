@@ -1,0 +1,19 @@
+{
+  "create_obj": {
+    "table_name": "students",
+    "primary_key": "student_id"
+  },
+  "doc_obj": {
+    "student_id": "abcxyz",
+    "name": "Rohan",
+    "grade": "A"
+  },
+  "query_obj": {
+    "student_id": "abcxyz"
+  },
+  "update_obj": {
+    "student_id": "abcxyz",
+    "grade": "B+",
+    "email": "test@test"
+  }
+}

@@ -53,7 +53,19 @@ impl Table {
         }
 
     }
-    async fn update_document(&self, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {todo!()}
+    async fn update_document(&self, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
+        if let Err(e) = crate::validation::check_string_fields_exist(&info, &[self.primary_key.as_str()]) {
+            return Err(e);
+        }
+        let mut guard = self.data.write().await;
+        let mut doc = guard.deref_mut().get_mut(&info[&(self.primary_key)].as_str().unwrap().to_string());
+        if let Some(doc) = &mut doc {
+            for (key, val) in info.as_object().unwrap() {
+                doc[key] = val.clone();
+            }
+        }
+        Ok(NULL_VAL)
+    }
     async fn delete_document(&self, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
         if let Err(e) = crate::validation::check_string_fields_exist(&info, &[self.primary_key.as_str()]) {
             return Err(e);
@@ -222,7 +234,15 @@ impl Database {
             }
         }
     }
-    pub async fn update_document(&self, table_name: &String, info: serde_json::Value) {todo!()}
+    pub async fn update_document(&self, table_name: &String, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
+        let guard = self.tables.read().await;
+        match guard.deref().get(table_name) {
+            None => {Err(crate::errors::DbError::TableNotFound(String::from("Table does not exist")))}
+            Some(table) => {
+                table.update_document(info).await
+            }
+        }
+    }
     pub async fn delete_document(&self, table_name: &String, info: serde_json::Value) -> Result<serde_json::Value, crate::errors::DbError> {
         let guard = self.tables.read().await;
         match guard.deref().get(table_name) {

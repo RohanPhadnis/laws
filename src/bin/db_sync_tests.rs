@@ -12,15 +12,21 @@ async fn main() {
     // create database
     let db = laws::data_structures::Database::new("./data");
 
-    // db.create_table(
-    //     j["create_obj"].clone()
-    // ).await.unwrap();
+    db.create_table(
+        j["create_obj"].clone()
+    ).await.unwrap();
 
-    // db.create_document(&"students".to_string(), j["doc_obj"].clone()).await.unwrap();
+    db.create_document(&"students".to_string(), j["doc_obj"].clone()).await.unwrap();
 
-    println!("{}", db.read_db().await);
+    println!("{}", db.read_db().await.unwrap());
     println!("{}", db.read_table(&"students".to_string()).await.unwrap());
     println!("{}", db.read_document(&"students".to_string(), j["query_obj"].clone()).await.unwrap());
+
+    db.update_document(&"students".to_string(), j["update_obj"].clone()).await.unwrap();
+
+    println!("{}", db.read_table(&"students".to_string()).await.unwrap());
+    println!("{}", db.read_document(&"students".to_string(), j["query_obj"].clone()).await.unwrap());
+
 
     db.save().await;
 
