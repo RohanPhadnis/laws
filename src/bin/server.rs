@@ -60,7 +60,7 @@ async fn main() {
         // DB level CRUD
         .route(
             "/db",
-            axum::routing::get(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+            axum::routing::get(async |db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>| {
                 convert_to_response(db.read_db().await).into_response()
             })
         )
@@ -95,7 +95,7 @@ async fn main() {
         )
         .with_state(db.clone());
 
-    let listener = tokio::net::TcpListener::bind("[::1]:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("[::1]:6969").await.unwrap();
     axum::serve(listener, app).with_graceful_shutdown(shutdown_signal()).await.unwrap();
 
     db.save().await;

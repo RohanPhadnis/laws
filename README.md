@@ -91,7 +91,9 @@ Developed to locally test with NoSQL DBs and Object Stores, since I'm too broke 
 1. Add large object store
 2. Implement clients
 3. Update operations
-4. Advanced queries
+4. Advanced queries & updates
 5. Authentication + API Keys
 6. Authorization + Permissions
 7. Dashboard
+8. SECONDARY KEY
+9. fix all warnings
