@@ -89,6 +89,9 @@ async fn main() {
                    .get(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                        convert_to_response(db.read_document(&table_name, info).await).into_response()
                    })
+                   .put(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+                       convert_to_response(db.update_document(&table_name, info).await).into_response()
+                   })
                    .delete(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                        convert_to_response(db.delete_document(&table_name, info).await).into_response()
                    })
