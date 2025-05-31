@@ -1,4 +1,7 @@
-use std::sync::Arc;
+fn main() {
+
+}
+/*use std::sync::Arc;
 use axum::http::Response;
 use axum::Json;
 use axum::response::IntoResponse;
@@ -54,13 +57,13 @@ fn convert_to_response(result: Result<serde_json::Value, laws::errors::DbError>)
 #[tokio::main]
 async fn main() {
 
-    let db = std::sync::Arc::new(laws::data_structures::Database::new("./data"));
+    let db = std::sync::Arc::new(laws::database::Database::new("./data"));
 
     let app = axum::Router::new()
         // DB level CRUD
         .route(
             "/db",
-            axum::routing::get(async |db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>| {
+            axum::routing::get(async |db: axum::extract::State<std::sync::Arc<laws::database::Database>>| {
                 convert_to_response(db.read_db().await).into_response()
             })
         )
@@ -68,14 +71,14 @@ async fn main() {
         // table level CRUD
         .route(
             "/db/table/{table_name}",
-               axum::routing::post(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+               axum::routing::post(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::database::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                    let db = db.clone();
                    convert_to_response(db.create_table(info).await).into_response()
                })
-                   .get(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+                   .get(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::database::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                        convert_to_response(db.read_table(&table_name).await).into_response()
                    })
-                   .delete(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+                   .delete(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::database::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                        convert_to_response(db.delete_table(&table_name).await).into_response()
                    })
         )
@@ -83,16 +86,16 @@ async fn main() {
         // document level CRUD
         .route(
             "/db/table/{table_name}/doc",
-               axum::routing::post(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+               axum::routing::post(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::database::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                    convert_to_response(db.create_document(&table_name, info).await).into_response()
                })
-                   .get(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+                   .get(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::database::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                        convert_to_response(db.read_document(&table_name, info).await).into_response()
                    })
-                   .put(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+                   .put(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::database::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                        convert_to_response(db.update_document(&table_name, info).await).into_response()
                    })
-                   .delete(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::data_structures::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
+                   .delete(async |axum::extract::Path(table_name): axum::extract::Path<String>, db: axum::extract::State<std::sync::Arc<laws::database::Database>>, axum::Json(info): axum::Json<serde_json::Value>| {
                        convert_to_response(db.delete_document(&table_name, info).await).into_response()
                    })
         )
@@ -102,4 +105,4 @@ async fn main() {
     axum::serve(listener, app).with_graceful_shutdown(shutdown_signal()).await.unwrap();
 
     db.save().await;
-}
+}*/
