@@ -1,11 +1,11 @@
 use crate::{*};
 
 pub struct Database {
-    tables: Arc<RwLock<HashMap<&String, table::Table >>>,
+    tables: Arc<RwLock<HashMap<String, table::Table >>>,
     path: String,
 }
 
-impl Clone for Database{
+impl Clone for Database {
     fn clone(&self) -> Self {
         Self {
             tables: self.tables.clone(),
@@ -45,11 +45,11 @@ impl Database {
         }
 
         // JSON-ify check
-        let tables = serde_json::from_str(s.as_str());
+        let tables = serde_json::from_str::<Vec<Value>>(s.as_str());
         if tables.is_err() {
             return Self::cold_start(path);
         }
-        let Value::Array(tables) = tables.unwrap();
+        let tables: Vec<Value> = tables.unwrap();
 
         let mut output = HashMap::new();
         for table in tables {
@@ -58,7 +58,7 @@ impl Database {
                 return Self::cold_start(path);
             }
             let table = table.unwrap();
-            output.insert(&table.table_name, table);
+            output.insert(table.table_name.clone(), table);
         }
 
         Self {
@@ -98,7 +98,7 @@ impl Database {
     pub async fn create_table(&self, info: Value) -> Result<Value, errors::DbError> {
         let table = table::Table::new(&info).await?;
         let mut guard = self.tables.write().await;
-        guard.deref_mut().insert(&table.table_name, table);
+        guard.deref_mut().insert(table.table_name.clone(), table);
         Ok(NULL_VAL)
     }
 

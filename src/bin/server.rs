@@ -1,12 +1,4 @@
-fn main() {
-
-}
-/*use std::sync::Arc;
-use axum::http::Response;
-use axum::Json;
 use axum::response::IntoResponse;
-use serde_json::json;
-use laws::errors::DbError;
 
 async fn shutdown_signal() {
     let ctrl_c = async {
@@ -42,9 +34,9 @@ fn convert_to_response(result: Result<serde_json::Value, laws::errors::DbError>)
         }
         Err(e) => {
             let status_code = match e {
-                DbError::MissingFields(_) => {axum::http::StatusCode::FAILED_DEPENDENCY}
-                DbError::TableNotFound(_) => {axum::http::StatusCode::NOT_FOUND}
-                DbError::BadInput(_) => {axum::http::StatusCode::BAD_REQUEST}
+                laws::errors::DbError::MissingFields(_) => {axum::http::StatusCode::FAILED_DEPENDENCY}
+                laws::errors::DbError::TableNotFound(_) => {axum::http::StatusCode::NOT_FOUND}
+                laws::errors::DbError::BadInput(_) => {axum::http::StatusCode::BAD_REQUEST}
             };
             (
                 status_code,
@@ -57,7 +49,7 @@ fn convert_to_response(result: Result<serde_json::Value, laws::errors::DbError>)
 #[tokio::main]
 async fn main() {
 
-    let db = std::sync::Arc::new(laws::database::Database::new("./data"));
+    let db = std::sync::Arc::new(laws::database::Database::new("./data").await);
 
     let app = axum::Router::new()
         // DB level CRUD
@@ -105,4 +97,4 @@ async fn main() {
     axum::serve(listener, app).with_graceful_shutdown(shutdown_signal()).await.unwrap();
 
     db.save().await;
-}*/
+}

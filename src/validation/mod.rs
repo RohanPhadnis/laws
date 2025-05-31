@@ -16,11 +16,11 @@ pub fn check_key_fields_exist(value: &Value, fields: &[&str]) -> Result<(), erro
         if value.get(field).is_none() {
             return Err(errors::DbError::MissingFields(format!("{} field is missing or null", field)));
         }
-        let Some(key_obj) = value.get(field);
+        let key_obj = value.get(field).unwrap();
         if !key_obj.is_object() {
             return Err(errors::DbError::BadInput(format!("{} must be a valid JSON object", field)))
         }
-        check_key_fields_exist(key_obj, &["name", "datatype"])?
+        check_string_fields_exist(key_obj, &["name", "datatype"])?
     }
     Ok(())
 }

@@ -1,7 +1,14 @@
 {
   "create_obj": {
     "table_name": "students",
-    "primary_key": "student_id"
+    "primary_key": {
+      "name": "student_id",
+      "datatype": "String"
+    },
+    "sort_key": {
+      "name": "Null",
+      "datatype": "Null"
+    }
   },
   "doc_obj": {
     "student_id": "abcxyz",

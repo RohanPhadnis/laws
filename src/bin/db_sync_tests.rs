@@ -1,4 +1,4 @@
-/*use std::io::Read;
+use std::io::Read;
 
 #[tokio::main]
 async fn main() {
@@ -10,7 +10,7 @@ async fn main() {
     let j: serde_json::Value = serde_json::from_slice(&buff[0..n]).unwrap();
 
     // create database
-    let db = laws::database::Database::new("./data");
+    let db = laws::database::Database::new("./data").await;
 
     db.create_table(
         j["create_obj"].clone()
@@ -31,5 +31,3 @@ async fn main() {
     db.save().await;
 
 }
-*/
-fn main() {}
