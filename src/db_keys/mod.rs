@@ -44,15 +44,12 @@ impl KeyDatatype {
     }
 
     pub fn from_str(s: &str) -> Self {
-        println!("input is {}", s);
-        let output = if s.eq("Boolean") {Self::Boolean(false)}
+        if s.eq("Boolean") {Self::Boolean(false)}
         else if s.eq("UnsignedInt") {Self::UnsignedInt(0)}
         else if s.eq("SignedInt") {Self::SignedInt(0)}
         // else if s.eq("Float") {Self::Float(0.)}
         else if s.eq("String") {Self::String(String::new())}
-        else {Self::Null(())};
-        println!("output is of type {}", output.to_str());
-        output
+        else {Self::Null(())}
     }
 }
 
