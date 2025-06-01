@@ -16,11 +16,11 @@ impl Table {
             table_name: info.get("table_name").unwrap().as_str().unwrap().to_string(),
             primary_key: db_keys::Key {
                 name: info.get("primary_key").unwrap().get("name").unwrap().as_str().unwrap().to_string(),
-                datatype: db_keys::KeyDatatype::from_str(info.get("primary_key").unwrap().get("name").unwrap().as_str().unwrap()),
+                datatype: db_keys::KeyDatatype::from_str(info.get("primary_key").unwrap().get("datatype").unwrap().as_str().unwrap()),
             },
             sort_key: db_keys::Key {
                 name: info.get("sort_key").unwrap().get("name").unwrap().as_str().unwrap().to_string(),
-                datatype: db_keys::KeyDatatype::from_str(info.get("sort_key").unwrap().get("name").unwrap().as_str().unwrap()),
+                datatype: db_keys::KeyDatatype::from_str(info.get("sort_key").unwrap().get("datatype").unwrap().as_str().unwrap()),
             },
             data: Arc::new(RwLock::new(HashMap::new())),
         };
