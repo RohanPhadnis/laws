@@ -50,8 +50,29 @@ fn convert_to_response(result: Result<serde_json::Value, laws::errors::DbError>)
 async fn main() {
 
     let db = std::sync::Arc::new(laws::database::Database::new("./data").await);
+    let fs = std::sync::Arc::new(laws::storage::Storage::new());
 
     let app = axum::Router::new()
+
+        .route(
+            "/buckets",
+            axum::routing::get(async || {})
+        )
+
+        .route(
+            "/buckets/{bucket_name}",
+            axum::routing::post(async || {})
+                .get(async || {})
+                .delete(async || {  })
+        )
+
+        .route(
+            "/buckets/{bucket_name}/file",
+            axum::routing::post(async || {})
+                .get(async || {})
+                .delete(async || {})
+        )
+
         // DB level CRUD
         .route(
             "/db",
@@ -91,7 +112,8 @@ async fn main() {
                        convert_to_response(db.delete_document(&table_name, info).await).into_response()
                    })
         )
-        .with_state(db.clone());
+        .with_state(db.clone())
+        .with_state(fs.clone());
 
     let listener = tokio::net::TcpListener::bind("[::1]:6969").await.unwrap();
     axum::serve(listener, app).with_graceful_shutdown(shutdown_signal()).await.unwrap();
